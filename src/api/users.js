@@ -1,6 +1,4 @@
-
-
-import { collection, getDocs, addDoc, doc, deleteDoc, updateDoc, query, where } from "firebase/firestore";
+import { collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { db } from '../config/connection'
 import { ComparePassword, ConvertHashPassword } from '../auth/authService'
 
@@ -15,25 +13,6 @@ export async function getUsers() {
     });
 
     return roleArray;
-}
-
-export async function addUser(formData) {
-
-    try {
-        const hashPassword = await ConvertHashPassword(formData.password)
-        const payload = {
-            ...formData,
-            password: hashPassword
-        }
-
-        const docRef = await addDoc(collection(db, "users"), payload);
-        console.log("Document written with ID: ", docRef.id);
-
-        return docRef;
-
-    } catch (e) {
-        console.error("Error adding document: ", e);
-    }
 }
 
 export async function updateUser(id, updateData) {
@@ -58,36 +37,3 @@ export async function deleteUser(id) {
 
 }
 
-export async function loginUser(data) {
-
-    // console.log(data);
-
-    try {
-        const searchQuery = query(collection(db, "users"), where("email", "==", data.email));
-        const response = await getDocs(searchQuery)
-        if (response.empty) {
-            console.error("user not found ")
-        }
-        const userDoc = response.docs[0];
-        // console.log(userDoc.data());
-        const userData = { ...userDoc.data() };
-        const responseCompared = await ComparePassword(data.password, userData.password)
-        return responseCompared;
-
-
-
-        //     const response = await getDocs(searchQuery)
-        //     console.log(response)
-        //     if (response.empty) {
-        //         console.error("Users Not Found");
-        //     }
-        //     const userDoc = response.docs[0];
-        //     const userData = { ...userDoc.data() };
-        //     const responseCompared = await ComparePassword(data.password, userData.password)
-        //     console.log('response', responseCompared);
-        //     return responseCompared;
-
-    } catch (e) {
-        console.error("error at login ", e)
-    }
-}

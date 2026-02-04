@@ -1,26 +1,23 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Box, Button, Link, Paper, TextField, Typography } from '@mui/material'
-import { loginUser } from '../api/users';
-
+import { AuthContext } from './context/auth-context'
+import { useNavigate } from 'react-router'
 
 function LoginUser() {
+    const { loginUser } = useContext(AuthContext);
+    const navigate = useNavigate();
     const [formData, setFormData] = useState()
 
     const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            e.preventDefault();
-            const response = await loginUser(formData)
-            if (response?.success) {
-                window.alert(response.message)
-            }
-            if (response == true) {
-                alert("Login Successful")
-            } else {
-                alert("Invalid credentials ")
-            }
+            await loginUser?.(formData)
+            alert('Login successfull')
+            navigate('/header', { replace: true })
 
         } catch (error) {
             console.error(error);
+            alert(error)
         }
 
     }
@@ -111,7 +108,7 @@ function LoginUser() {
                     Sign In
                 </Button>
 
-                <Link href="/register" variant="body2" color="text.secondary">
+                <Link href="/auth/register" variant="body2" color="text.secondary">
                     {'Don\'t have an account? Sign Up'}
                 </Link>
             </Paper>

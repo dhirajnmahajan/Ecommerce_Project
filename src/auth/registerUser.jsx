@@ -1,9 +1,11 @@
 import { Box, Button, Link, Paper, TextField, Typography } from '@mui/material'
-import React, { useState } from 'react'
-import { addUser } from '../api/users'
+import React, { useContext, useState } from 'react'
+import { AuthContext } from './context/auth-context'
 import { useNavigate } from 'react-router'
 
 function RegisterUser() {
+
+    const { addUser } = useContext(AuthContext);
     const [formData, setFormData] = useState({
         firstname: '',
         lastname: '',

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { AuthContext } from "../auth/context/auth-context";
 import {
     AppBar,
     Box,
@@ -14,7 +15,8 @@ import {
     Avatar,
     Menu,
     MenuItem,
-    Divider
+    Divider,
+    ListItemButton
 } from "@mui/material";
 
 import MenuIcon from "@mui/icons-material/Menu";
@@ -24,16 +26,17 @@ import PeopleIcon from "@mui/icons-material/People";
 import SecurityIcon from "@mui/icons-material/Security";
 import SettingsIcon from "@mui/icons-material/Settings";
 
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 const drawerWidth = 240;
 const miniDrawerWidth = 64;
 
 function Headers() {
 
+    const { logout } = useContext(AuthContext)
     const [open, setOpen] = useState(true);
     const [anchorEl, setAnchorEl] = useState(null);
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const profileMenuOpen = Boolean(anchorEl);
 
@@ -62,6 +65,7 @@ function Headers() {
 
     const toggleDrawer = () => {
         setOpen(prev => !prev);
+        document.activeElement?.blur();
     };
 
     const handleProfileClick = (event) => {
@@ -97,29 +101,53 @@ function Headers() {
             {/* Navigation */}
             <List>
                 {NavItems.map(({ label, icon, path }) => (
-                    <ListItem
-                        key={label}
-                        button
-                        component={Link}
-                        to={path}
-                        selected={navigate.pathname === path}
-                        sx={{
-                            justifyContent: open ? "initial" : "center",
-                            px: 2.5
-                        }}
-                    >
-                        <ListItemIcon
+                    // <ListItem
+                    //     key={label}
+                    //     button
+                    //     component={Link}
+                    //     to={path}
+                    //     selected={navigate.pathname === path}
+                    //     sx={{
+                    //         justifyContent: open ? "initial" : "center",
+                    //         px: 2.5
+                    //     }}
+                    // >
+                    //     <ListItemIcon
+                    //         sx={{
+                    //             minWidth: 0,
+                    //             mr: open ? 3 : "auto",
+                    //             justifyContent: "center"
+                    //         }}
+                    //     >
+                    //         {icon}
+                    //     </ListItemIcon>
+
+                    //     {open && <ListItemText primary={label} />}
+                    // </ListItem>
+                    <ListItem disablePadding key={path}>
+                        <ListItemButton
+                            component={Link}
+                            to={path}
+                            selected={location.pathname === path}
                             sx={{
-                                minWidth: 0,
-                                mr: open ? 3 : "auto",
-                                justifyContent: "center"
+                                justifyContent: open ? "initial" : "center",
+                                px: 2.5
                             }}
                         >
-                            {icon}
-                        </ListItemIcon>
+                            <ListItemIcon
+                                sx={{
+                                    minWidth: 0,
+                                    mr: open ? 3 : "auto",
+                                    justifyContent: "center"
+                                }}
+                            >
+                                {icon}
+                            </ListItemIcon>
 
-                        {open && <ListItemText primary={label} />}
+                            {open && <ListItemText primary={label} />}
+                        </ListItemButton>
                     </ListItem>
+
                 ))}
             </List>
         </Box>
@@ -171,6 +199,7 @@ function Headers() {
                         anchorEl={anchorEl}
                         open={profileMenuOpen}
                         onClose={handleCloseMenu}
+                        disableRestoreFocus
                         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                         transformOrigin={{ vertical: "top", horizontal: "right" }}
                     >
@@ -179,7 +208,7 @@ function Headers() {
 
                         <Divider />
 
-                        <MenuItem onClick={handleCloseMenu}>Logout</MenuItem>
+                        <MenuItem onClick={logout}>Logout</MenuItem>
                     </Menu>
                 </Toolbar>
             </AppBar>
@@ -189,6 +218,7 @@ function Headers() {
                 variant="temporary"
                 open={open}
                 onClose={toggleDrawer}
+                ModalProps={{ keepMounted: true }}
                 sx={{
                     display: { xs: "block", sm: "none" },
                     "& .MuiDrawer-paper": { width: drawerWidth }
