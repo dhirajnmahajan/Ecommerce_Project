@@ -1,40 +1,59 @@
 import { Box, Button, Link, Paper, TextField, Typography } from '@mui/material'
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { AuthContext } from './context/auth-context'
 import { useNavigate } from 'react-router'
+import * as yup from 'yup'
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Controler } from '../components';
 
 function RegisterUser() {
 
     const { addUser } = useContext(AuthContext);
-    const [formData, setFormData] = useState({
+    const navigate = useNavigate()
+
+
+
+    const registerSchema = yup.object().shape({
+        firstname: yup.string().required("First name is required"),
+        lastname: yup.string().required("Last name is required"),
+        email: yup.string().email("Invalid email format").required("email is required"),
+        phoneNumber: yup.string().required("phone is required"),
+        password: yup.string().required("password is required")
+    })
+
+    const defaultValues = {
         firstname: '',
         lastname: '',
         email: '',
         phoneNumber: '',
         password: ''
+    }
+
+    const method = useForm({
+        resolver: yupResolver(registerSchema),
+        defaultValues
+    })
+
+    const { control, handleSubmit, formState: { isSubmitting } } = method;
+
+    const onSubmit = handleSubmit(async (data) => {
+        try {
+            const response = await addUser(data)
+            // console.log(response);
+            if (response) {
+                window.alert("Registeration Successfull")
+                navigate('/auth/login', { replace: true })
+            }
+        } catch (error) {
+            console.log('error', error);
+
+            window.alert(error?.message)
+        }
 
     })
 
-    const navigate = useNavigate()
 
-    const handleSubmit = async (e) => {
-
-        try {
-            e.preventDefault()
-
-            const response = await addUser(formData)
-            if (response?.success) {
-                window.alert(response.message)
-            }
-            navigate('/login')
-
-        } catch (err) {
-            console.log('error', err);
-            window.alert(err?.message)
-
-        }
-
-    }
     return (
         <Box
             sx={{
@@ -49,7 +68,7 @@ function RegisterUser() {
         >
             <Paper
                 component="form"
-                onSubmit={handleSubmit}
+                onSubmit={onSubmit}
                 elevation={8}
                 sx={{
                     p: { xs: 3, md: 6 },
@@ -70,7 +89,14 @@ function RegisterUser() {
 
                 <div className='grid grid-cols-12'>
                     <div className='grid col-span-6'>
-                        <TextField
+
+                        <Controler name={'firstname'} label={'First Name'} type={'text'} control={control} />
+                        <Controler name={'lastname'} label={'Last Name'} type={'text'} control={control} />
+                        <Controler name={'email'} label={'Email'} type={'text'} control={control} />
+                        <Controler name={'phoneNumber'} label={'Phone Number'} type={'number'} control={control} />
+                        <Controler name={'password'} label={'Password'} type={'password'} control={control} />
+
+                        {/* <TextField
                             margin="normal"
                             required
                             fullWidth
@@ -144,7 +170,9 @@ function RegisterUser() {
                                 ...prev,
                                 password: e.target.value
                             }))}
-                        />
+                        /> */}
+
+
                     </div>
                 </div>
                 <Box>
@@ -155,6 +183,7 @@ function RegisterUser() {
 
                 <Button
                     type="submit"
+                    loading={isSubmitting}
                     fullWidth
                     variant="contained"
                     size="large"
@@ -164,7 +193,7 @@ function RegisterUser() {
                     Sign Up
                 </Button>
 
-                <Link href="/login" variant="body2" color="text.secondary"
+                <Link href="/auth/login" variant="body2" color="text.secondary"
                 >
                     {'I have a account? Sign In'}
                 </Link>

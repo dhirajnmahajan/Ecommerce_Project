@@ -1,17 +1,38 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 import { Box, Button, Link, Paper, TextField, Typography } from '@mui/material'
 import { AuthContext } from './context/auth-context'
 import { useNavigate } from 'react-router'
+import * as yup from 'yup'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { Controller, useForm } from 'react-hook-form'
+import { Controler } from '../components'
+
 
 function LoginUser() {
     const { loginUser } = useContext(AuthContext);
     const navigate = useNavigate();
-    const [formData, setFormData] = useState()
+    // const [formData, setFormData] = useState()
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const loginSchema = yup.object().shape({
+        email: yup.string().email("Invalid email format").required("Email is required !"),
+        password: yup.string().required("Password is required")
+    });
+
+    const defaultValues = {
+        email: "",
+        password: ""
+    };
+
+    const method = useForm({
+        resolver: yupResolver(loginSchema),
+        defaultValues
+    });
+
+    const { control, handleSubmit, formState: { isSubmitting } } = method;
+
+    const onSubmit = handleSubmit(async (data) => {
         try {
-            await loginUser?.(formData)
+            await loginUser?.(data)
             alert('Login successfull')
             navigate('/header', { replace: true })
 
@@ -19,8 +40,23 @@ function LoginUser() {
             console.error(error);
             alert(error)
         }
+    })
 
-    }
+
+
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         await loginUser?.(formData)
+    //         alert('Login successfull')
+    //         navigate('/header', { replace: true })
+    //     } catch (error) {
+    //         console.error(error);
+    //         alert(error)
+    //     }
+    // }
+
+
     return (
         <Box
             sx={{
@@ -35,7 +71,7 @@ function LoginUser() {
         >
             <Paper
                 component="form"
-                onSubmit={handleSubmit}
+                onSubmit={onSubmit}
                 elevation={8}
                 sx={{
                     p: { xs: 3, md: 6 },
@@ -55,7 +91,7 @@ function LoginUser() {
                     Access your account with your credentials
                 </Typography>
 
-                <TextField
+                {/* <TextField
                     margin="normal"
                     required
                     fullWidth
@@ -86,7 +122,10 @@ function LoginUser() {
                         ...prev,
                         password: e.target.value
                     }))}
-                />
+                /> */}
+
+                <Controler name={'email'} label={'email'} type={'email'} control={control} />
+                <Controler name={'password'} label={'password'} type={'password'} control={control} />
 
                 <Box
                     sx={{
@@ -100,6 +139,7 @@ function LoginUser() {
 
                 <Button
                     type="submit"
+                    loading={isSubmitting}
                     fullWidth
                     variant="contained"
                     size="large"

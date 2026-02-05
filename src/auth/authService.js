@@ -5,7 +5,7 @@ const saltRounds = 10
 export const ConvertHashPassword = async (textPassword) => {
     const salt = await bcrypt.genSaltSync(saltRounds)
     const hashPassword = await bcrypt.hash(textPassword, salt)
-    console.log(hashPassword);
+    // console.log(hashPassword);
 
     return hashPassword;
 };

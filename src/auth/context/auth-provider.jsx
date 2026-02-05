@@ -8,6 +8,7 @@ import { ComparePassword, ConvertHashPassword } from '../authService'
 export default function AuthProvider({ children }) {
     const [authenticated, setAuthenticated] = useState(false)
 
+
     const initialize = () => {
         const userProfile = JSON.parse(sessionStorage.getItem('user'))
         if (userProfile) {
@@ -40,6 +41,7 @@ export default function AuthProvider({ children }) {
         } catch (e) {
             console.error("Error adding document: ", e);
         }
+
     }
 
 
