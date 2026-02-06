@@ -2,7 +2,7 @@ import { Box, Button, Link, Paper, TextField, Typography } from '@mui/material'
 import React, { useContext } from 'react'
 import { AuthContext } from './context/auth-context'
 import { useNavigate } from 'react-router'
-import * as yup from 'yup'
+import * as Yup from 'yup'
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Controler } from '../components';
@@ -14,12 +14,12 @@ function RegisterUser() {
 
 
 
-    const registerSchema = yup.object().shape({
-        firstname: yup.string().required("First name is required"),
-        lastname: yup.string().required("Last name is required"),
-        email: yup.string().email("Invalid email format").required("email is required"),
-        phoneNumber: yup.string().required("phone is required"),
-        password: yup.string().required("password is required")
+    const registerSchema = Yup.object().shape({
+        firstname: Yup.string().required("First name is required"),
+        lastname: Yup.string().required("Last name is required"),
+        email: Yup.string().email("Invalid email format").required("email is required"),
+        phoneNumber: Yup.string().required("phone is required"),
+        password: Yup.string().required("password is required")
     })
 
     const defaultValues = {

@@ -7,13 +7,36 @@ import { ComparePassword, ConvertHashPassword } from '../authService'
 
 export default function AuthProvider({ children }) {
     const [authenticated, setAuthenticated] = useState(false)
+    const [user, setUser] = useState(null)
 
+    const me = async () => {
+        const userEmail = JSON.parse(sessionStorage.getItem('userEmail'));
+        const q = query(collection(db, "users"), where("email", "==", userEmail));
 
-    const initialize = () => {
-        const userProfile = JSON.parse(sessionStorage.getItem('user'))
-        if (userProfile) {
-            setAuthenticated(true)
+        const response = await getDocs(q)
+        if (response.empty) {
+            throw ("user Not Found");
+
         }
+        const userDoc = response.docs[0];
+        const userData = { ...userDoc.data() };
+
+
+        const userProfile = {
+            id: userDoc.id,
+            firstname: userData.firstname,
+            lastname: userData.lastname,
+            email: userData.email,
+            phoneNumber: userData.phoneNumber
+        };
+
+        setUser(userProfile);
+        return userProfile;
+    }
+
+    const initialize = async () => {
+        await me();
+        setAuthenticated(true)
     };
 
     useEffect(() => {
@@ -33,13 +56,19 @@ export default function AuthProvider({ children }) {
                 password: hashPassword
             }
 
-            const docRef = await addDoc(collection(db, "users"), payload);
-            console.log("Document written with ID: ", docRef.id);
+            const response = await addDoc(collection(db, "users"), payload);
+            // console.log("Document written with ID: ", response.id);
 
-            return docRef;
+            if (response) {
+                return {
+                    success: true,
+                    message: "User created"
+                }
+            }
 
-        } catch (e) {
-            console.error("Error adding document: ", e);
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            throw error;
         }
 
     }
@@ -65,7 +94,19 @@ export default function AuthProvider({ children }) {
                 sessionStorage.setItem("user", JSON.stringify(userData));
                 setAuthenticated(true);
             }
-            return responseCompared;
+            const userProfile = {
+                id: userDoc.id,
+                firstname: userData.firstname,
+                lastname: userData.lastname,
+                email: userData.email,
+                phoneNumber: userData.phoneNumber
+            };
+
+            sessionStorage.setItem("userEmail", JSON.stringify(userProfile.email));
+            setAuthenticated(true);
+            setUser(userProfile);
+            return userProfile;
+
         } catch (e) {
             console.error("error at login ", e)
         }
@@ -78,7 +119,7 @@ export default function AuthProvider({ children }) {
     }
 
     return (
-        <AuthContext.Provider value={{ authenticated, loginUser, addUser, logout }}>
+        <AuthContext.Provider value={{ authenticated, user, loginUser, addUser, logout }}>
             {children}
         </AuthContext.Provider>
     )

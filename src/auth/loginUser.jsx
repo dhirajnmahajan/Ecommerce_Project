@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { Box, Button, Link, Paper, TextField, Typography } from '@mui/material'
 import { AuthContext } from './context/auth-context'
 import { useNavigate } from 'react-router'
-import * as yup from 'yup'
+import * as Yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Controller, useForm } from 'react-hook-form'
 import { Controler } from '../components'
@@ -13,9 +13,9 @@ function LoginUser() {
     const navigate = useNavigate();
     // const [formData, setFormData] = useState()
 
-    const loginSchema = yup.object().shape({
-        email: yup.string().email("Invalid email format").required("Email is required !"),
-        password: yup.string().required("Password is required")
+    const loginSchema = Yup.object().shape({
+        email: Yup.string().email("Invalid email format").required("Email is required !"),
+        password: Yup.string().required("Password is required")
     });
 
     const defaultValues = {
@@ -34,7 +34,7 @@ function LoginUser() {
         try {
             await loginUser?.(data)
             alert('Login successfull')
-            navigate('/header', { replace: true })
+            navigate('/profile', { replace: true })
 
         } catch (error) {
             console.error(error);

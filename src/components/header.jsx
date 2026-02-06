@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { Children, useContext, useState } from "react";
 import { AuthContext } from "../auth/context/auth-context";
 import {
     AppBar,
@@ -26,12 +26,13 @@ import PeopleIcon from "@mui/icons-material/People";
 import SecurityIcon from "@mui/icons-material/Security";
 import SettingsIcon from "@mui/icons-material/Settings";
 
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+// import { ProfileForm } from '../pages'
 
 const drawerWidth = 240;
 const miniDrawerWidth = 64;
 
-function Headers() {
+function Headers({ children }) {
 
     const { logout } = useContext(AuthContext)
     const [open, setOpen] = useState(true);
@@ -39,6 +40,7 @@ function Headers() {
     // const navigate = useNavigate();
 
     const profileMenuOpen = Boolean(anchorEl);
+    const navigate = useNavigate()
 
     const NavItems = [
         {
@@ -62,6 +64,19 @@ function Headers() {
             icon: <SettingsIcon />
         }
     ];
+
+    const profileNavigate = () => {
+        navigate('/profile');
+    }
+
+    // // const profileItems = [{
+    // //     label: "profile",
+    // //     function: profile
+    // // },
+    // // {
+
+    // // }]
+
 
     const toggleDrawer = () => {
         setOpen(prev => !prev);
@@ -203,7 +218,7 @@ function Headers() {
                         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
                         transformOrigin={{ vertical: "top", horizontal: "right" }}
                     >
-                        <MenuItem onClick={handleCloseMenu}>Profile</MenuItem>
+                        <MenuItem onClick={profileNavigate}>Profile</MenuItem>
                         <MenuItem onClick={handleCloseMenu}>Settings</MenuItem>
 
                         <Divider />
@@ -253,9 +268,10 @@ function Headers() {
                     transition: "0.3s"
                 }}
             >
-                <Typography>
-                    Page content goes here
-                </Typography>
+                {/* //     <Typography>
+            //         Page content goes here
+            //     </Typography> */}
+                {children}
             </Box>
         </Box>
     );
