@@ -4,7 +4,7 @@ import { AuthContext } from './context/auth-context'
 import { useNavigate } from 'react-router'
 import * as Yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Controller, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { Controler } from '../components'
 
 
@@ -34,27 +34,13 @@ function LoginUser() {
         try {
             await loginUser?.(data)
             alert('Login successfull')
-            navigate('/profile', { replace: true })
+            navigate('/dashboard', { replace: true })
 
         } catch (error) {
             console.error(error);
             alert(error)
         }
     })
-
-
-
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     try {
-    //         await loginUser?.(formData)
-    //         alert('Login successfull')
-    //         navigate('/header', { replace: true })
-    //     } catch (error) {
-    //         console.error(error);
-    //         alert(error)
-    //     }
-    // }
 
 
     return (
@@ -91,38 +77,6 @@ function LoginUser() {
                     Access your account with your credentials
                 </Typography>
 
-                {/* <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="email"
-                    label="Email Address"
-                    name="email"
-                    autoComplete="email"
-                    autoFocus
-                    variant="outlined"
-                    //   value={email}
-                    onChange={(e) => setFormData((prev) => ({
-                        ...prev,
-                        email: e.target.value
-                    }))}
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                    variant="outlined"
-                    //   value={password}
-                    onChange={(e) => setFormData((prev) => ({
-                        ...prev,
-                        password: e.target.value
-                    }))}
-                /> */}
 
                 <Controler name={'email'} label={'email'} type={'email'} control={control} />
                 <Controler name={'password'} label={'password'} type={'password'} control={control} />

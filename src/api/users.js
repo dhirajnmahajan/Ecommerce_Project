@@ -1,4 +1,4 @@
-import { collection, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { db } from '../config/connection'
 import { ComparePassword, ConvertHashPassword } from '../auth/authService'
 
@@ -15,17 +15,17 @@ export async function getUsers() {
     return roleArray;
 }
 
-export async function updateUser(id, updateData) {
-    try {
-        const docRef = doc(db, "users", id)
-        const response = await updateDoc(docRef, updateData);
-        console.log("Document edited with ID: ", docRef.id);
-        return response;
+// export async function updateUser(id, updateData) {
+//     try {
+//         const docRef = doc(db, "users", id)
+//         const response = await updateDoc(docRef, updateData);
+//         console.log("Document edited with ID: ", docRef.id);
+//         return response;
 
-    } catch (e) {
-        console.error("Error editing document: ", e);
-    }
-}
+//     } catch (e) {
+//         console.error("Error editing document: ", e);
+//     }
+// }
 
 export async function deleteUser(id) {
     try {

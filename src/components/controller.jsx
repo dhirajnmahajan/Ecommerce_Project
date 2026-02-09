@@ -11,12 +11,12 @@ export default function Controler({ control, name, label, type, ...other }) {
                     <TextField
                         {...field}
                         margin="normal"
+                        variant="outlined"
                         fullWidth
                         name={name}
                         label={label}
                         error={error}
                         type={type}
-                        variant="outlined"
                         helperText={error && error?.message}
                         onChange={(e) => field.onChange(e.target.value)}
                         {...other}
@@ -28,3 +28,32 @@ export default function Controler({ control, name, label, type, ...other }) {
         </>
     )
 }
+
+
+/*
+import {Controller} from 'react-hook-form'
+import {TextField} from '@mui/material
+
+func controler = ({name,label,type,control,..other})=> {
+  return(
+        <>
+        <Controller
+            name={name}
+            control={control}
+            render={ ({field, fieldState:{error}})=> (
+                
+                <TextField {...field} />
+                
+                )}
+            >
+
+
+    field = value , onChange , onBlur , name, ref
+            </ Controller>
+        </>
+ 
+ )
+
+ }
+
+*/

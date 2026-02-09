@@ -6,9 +6,11 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Controler } from "../components";
 import { Avatar, Box, Button, Grid, Paper, Stack, Typography } from '@mui/material';
+import { useNavigate } from 'react-router';
 
 function Profile() {
-    const { user } = useContext(AuthContext)
+    const { user, updateUser } = useContext(AuthContext)
+    const navigate = useNavigate()
 
     const profileSchema = Yup.object().shape({
         firstname: Yup.string().required('First name is required'),
@@ -37,7 +39,10 @@ function Profile() {
     } = methods;
 
     const onSubmit = handleSubmit(async (data) => {
-        console.log('data to be submitted :', data);
+        // console.log('data to be submitted :', data);
+        await updateUser(data);
+        navigate('/dashboard')
+
     })
 
     useEffect(() => {

@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react"
 import { AuthContext } from "./auth-context"
-import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { db } from "../../config/connection";
 import { ComparePassword, ConvertHashPassword } from '../authService'
-
 
 export default function AuthProvider({ children }) {
     const [authenticated, setAuthenticated] = useState(false)
@@ -88,9 +87,9 @@ export default function AuthProvider({ children }) {
             const userDoc = response.docs[0];
             // console.log(userDoc.data());
             const userData = { ...userDoc.data() };
-            const responseCompared = await ComparePassword(data.password, userData.password)
+            const comparedHash = await ComparePassword(data.password, userData.password)
 
-            if (responseCompared) {
+            if (comparedHash) {
                 sessionStorage.setItem("user", JSON.stringify(userData));
                 setAuthenticated(true);
             }
@@ -118,8 +117,53 @@ export default function AuthProvider({ children }) {
         setAuthenticated(false)
     }
 
+
+    // update function 
+    async function updateUser(data) {
+        try {
+
+            if (!user.id) {
+                throw ("User not found")
+            }
+
+            const docRef = doc(db, "users", user.id)
+            // console.log(user.id);
+
+
+            await updateDoc(docRef, {
+                firstname: data.firstname,
+                lastname: data.lastname
+            });
+
+            const updatedUser = {
+                ...user,
+                ...data
+            }
+            // console.log({ ...user });
+
+
+            setUser(updatedUser);
+            console.log(updatedUser);
+
+            sessionStorage.setItem("user", JSON.stringify(updateUser));
+
+            console.log("Document edited with ID: ", docRef.id);
+
+            return {
+                success: true,
+                message: "Profile updated successfully"
+            }
+
+
+        } catch (error) {
+            console.error("Profile update error ", error);
+            throw error;
+        }
+    }
+
+
     return (
-        <AuthContext.Provider value={{ authenticated, user, loginUser, addUser, logout }}>
+        <AuthContext.Provider value={{ authenticated, user, loginUser, addUser, updateUser, logout }}>
             {children}
         </AuthContext.Provider>
     )
