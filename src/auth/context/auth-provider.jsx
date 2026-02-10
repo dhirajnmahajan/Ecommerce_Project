@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { AuthContext } from "./auth-context"
-import { addDoc, collection, doc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { db } from "../../config/connection";
 import { ComparePassword, ConvertHashPassword } from '../authService'
 
@@ -76,46 +76,100 @@ export default function AuthProvider({ children }) {
     // Login function
     // this is login function which is written in user's api file previously 
 
-    async function loginUser(data) {
-        // console.log(data);
-        try {
-            const searchQuery = query(collection(db, "users"), where("email", "==", data.email));
-            const response = await getDocs(searchQuery)
-            if (response.empty) {
-                console.error("user not found ")
-            }
-            const userDoc = response.docs[0];
-            // console.log(userDoc.data());
-            const userData = { ...userDoc.data() };
-            const comparedHash = await ComparePassword(data.password, userData.password)
+    // async function loginUser(data) {
+    //     // console.log(data);
+    //     try {
+    //         const searchQuery = query(collection(db, "users"), where("email", "==", data.email));
+    //         const response = await getDocs(searchQuery)
+    //         if (response.empty) {
+    //             console.error("user not found ")
+    //         }
+    //         const userDoc = response.docs[0];
+    //         // console.log(userDoc.data());
+    //         const userData = { ...userDoc.data() };
+    //         const comparedHash = await ComparePassword(data.password, userData.password)
 
-            if (comparedHash) {
-                sessionStorage.setItem("user", JSON.stringify(userData));
-                setAuthenticated(true);
+    //         if (comparedHash) {
+    //             sessionStorage.setItem("user", JSON.stringify(userData));
+    //             setAuthenticated(true);
+    //         }
+    //         const userProfile = {
+    //             id: userDoc.id,
+    //             firstname: userData.firstname,
+    //             lastname: userData.lastname,
+    //             email: userData.email,
+    //             phoneNumber: userData.phoneNumber,
+    //         };
+
+    //         sessionStorage.setItem("userEmail", JSON.stringify(userProfile.email));
+    //         setAuthenticated(true);
+    //         setUser(userProfile);
+    //         return userProfile;
+
+    //     } catch (e) {
+    //         console.error("error at login ", e)
+    //     }
+    // }
+
+    async function loginUser(data) {
+        try {
+            const searchQuery = query(
+                collection(db, "users"),
+                where("email", "==", data.email)
+            );
+
+            const response = await getDocs(searchQuery);
+
+            if (response.empty) {
+                throw new Error("User not found");
             }
+
+            const userDoc = response.docs[0];
+            const userData = userDoc.data();
+
+            const comparedHash = await ComparePassword(
+                data.password,
+                userData.password
+            );
+
+            // ❗ stop login if password incorrect
+            if (!comparedHash) {
+                throw new Error("Invalid password");
+            }
+
             const userProfile = {
                 id: userDoc.id,
                 firstname: userData.firstname,
                 lastname: userData.lastname,
                 email: userData.email,
-                phoneNumber: userData.phoneNumber
+                phoneNumber: userData.phoneNumber,
             };
 
             sessionStorage.setItem("userEmail", JSON.stringify(userProfile.email));
             setAuthenticated(true);
             setUser(userProfile);
+
             return userProfile;
 
         } catch (e) {
-            console.error("error at login ", e)
+            console.error("error at login ", e);
+            throw e;
         }
     }
 
+
     // Logout 
+    // const logout = () => {
+    //     sessionStorage.removeItem('userEmail');
+    //     setAuthenticated(false)
+    // }
+
     const logout = () => {
-        sessionStorage.removeItem('user');
-        setAuthenticated(false)
-    }
+        sessionStorage.removeItem("userEmail");
+        sessionStorage.removeItem("user");
+        setUser(null);
+        setAuthenticated(false);
+    };
 
 
     // update function 
@@ -141,12 +195,9 @@ export default function AuthProvider({ children }) {
             }
             // console.log({ ...user });
 
-
             setUser(updatedUser);
-            console.log(updatedUser);
-
-            sessionStorage.setItem("user", JSON.stringify(updateUser));
-
+            // console.log(updatedUser);
+            sessionStorage.setItem("user", JSON.stringify(updatedUser));
             console.log("Document edited with ID: ", docRef.id);
 
             return {
@@ -161,9 +212,126 @@ export default function AuthProvider({ children }) {
         }
     }
 
+    // Change Password 
+
+    // async function changePassword(data) {
+    //     try {
+    //         if (!user?.id) {
+    //             throw new Error("User not found");
+    //         }
+    //         console.log("Form password:", data.currentPassword);
+    //         console.log("User object:", user);
+    //         console.log("User password:", user?.password);
+
+    //         //  covert text to hash
+    //         const formPassword = await ConvertHashPassword(data.password)
+
+    //         // verify old password
+    //         const isMatch = await ComparePassword(formPassword, user.password);
+
+    //         if (!isMatch) {
+    //             throw new Error("Provide correct old password !");
+    //         }
+
+    //         //  hash new password
+    //         const newHashedPassword = await ConvertHashPassword(data.newPassword);
+
+    //         //  update in Firestore
+    //         const docRef = doc(db, "users", user.id);
+
+    //         await updateDoc(docRef, { password: newHashedPassword });
+
+    //         return {
+    //             success: true,
+    //             message: "Password updated successfully"
+    //         };
+    //     } catch (error) {
+    //         console.error("Change password error:", error);
+    //         throw error;
+    //     }
+    // }
+
+    // async function changePassword(data) {
+    //     try {
+    //         const docRef = doc(db, "users", user.id);
+    //         const docSnap = await getDoc(docRef);
+
+    //         const dbUser = docSnap.data();
+
+    //         const isMatch = await ComparePassword(
+    //             data.currentPassword,
+    //             dbUser.password
+    //         );
+
+    //         if (!isMatch) {
+    //             throw new Error("Current password is incorrect");
+    //         }
+
+    //         const newHashed = await ConvertHashPassword(data.newPassword);
+
+    //         await updateDoc(docRef, {
+    //             password: newHashed
+    //         });
+
+    //         return {
+    //             success: true,
+    //             message: "Password updated successfully"
+    //         };
+    //     } catch (error) {
+    //         console.error("Change password error:", error);
+    //         throw error;
+    //     }
+    // }
+
+    async function changePassword(data) {
+        try {
+            if (!user?.id) {
+                throw new Error("User not found");
+            }
+
+            const docRef = doc(db, "users", user.id);
+            const docSnap = await getDoc(docRef);
+
+            if (!docSnap.exists()) {
+                throw new Error("User record not found");
+            }
+
+            const dbUser = docSnap.data();
+
+            // compare plain text with stored hash
+            const isMatch = await ComparePassword(
+                data.currentPassword,
+                dbUser.password
+            );
+
+            if (!isMatch) {
+                throw new Error("Current password is incorrect");
+            }
+
+            // hash new password
+            const newHashedPassword = await ConvertHashPassword(
+                data.newPassword
+            );
+
+            // update in firestore
+            await updateDoc(docRef, {
+                password: newHashedPassword
+            });
+
+            return {
+                success: true,
+                message: "Password updated successfully"
+            };
+        } catch (error) {
+            console.error("Change password error:", error);
+            throw error;
+        }
+    }
+
+
 
     return (
-        <AuthContext.Provider value={{ authenticated, user, loginUser, addUser, updateUser, logout }}>
+        <AuthContext.Provider value={{ authenticated, user, loginUser, addUser, updateUser, logout, changePassword }}>
             {children}
         </AuthContext.Provider>
     )

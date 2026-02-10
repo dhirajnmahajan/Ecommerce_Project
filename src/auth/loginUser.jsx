@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router'
 import * as Yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
-import { Controler } from '../components'
+import { Controler } from '../components/'
 
 
 function LoginUser() {

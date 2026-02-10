@@ -7,6 +7,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Controler } from "../components";
 import { Avatar, Box, Button, Grid, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 function Profile() {
     const { user, updateUser } = useContext(AuthContext)
@@ -41,7 +42,7 @@ function Profile() {
     const onSubmit = handleSubmit(async (data) => {
         // console.log('data to be submitted :', data);
         await updateUser(data);
-        navigate('/dashboard')
+        navigate('/dashboard/profile')
 
     })
 
@@ -51,12 +52,28 @@ function Profile() {
         }
     }, [user, defaultValues, reset]);
 
+    const onBack = () => {
+        navigate(-1)
+    }
+
     return (
         <Box sx={{ maxWidth: 800, mx: "auto", mt: 4 }}>
+
             <Paper sx={{ p: 4 }}>
-                <Typography variant="h4" mb={3}>
-                    Profile
-                </Typography>
+                <Grid container alignItems="center" m={2} spacing={2}>
+                    <Grid item xs={12} md={6}>
+                        <Stack direction="row" alignItems="center" spacing={1}>
+                            <ArrowBackIcon
+                                sx={{ cursor: "pointer" }}
+                                onClick={onBack}
+                            />
+                            <Typography variant="h4" mb={3}>
+                                Update  Profile
+                            </Typography>
+
+                        </Stack>
+                    </Grid>
+                </Grid>
 
                 <form onSubmit={onSubmit} >
 
@@ -104,7 +121,7 @@ function Profile() {
 
                             </Grid>
 
-                            <Grid item size={{ xs: 12, md: 12 }} sx={{ display: "flex", justifyContent: "flex-end" }}>
+                            <Grid item size={{ xs: 12, md: 12 }} mt={1} sx={{ display: "flex", justifyContent: "flex-end" }}>
                                 <Button
                                     variant="contained"
                                     loading={isSubmitting}

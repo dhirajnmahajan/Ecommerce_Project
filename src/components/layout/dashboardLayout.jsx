@@ -27,7 +27,7 @@ export default function DashboardLayout() {
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    p: 3,
+                    p: 2,
                     mt: 8,
                     ml: { sm: open ? `${drawerWidth}px` : `${miniDrawerWidth}px` },
                     transition: "0.3s"

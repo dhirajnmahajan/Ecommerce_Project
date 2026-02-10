@@ -8,6 +8,7 @@ import {
     Grid
 } from "@mui/material";
 import ImageIcon from "@mui/icons-material/Image";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack"
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useNavigate, useParams } from "react-router-dom";
 import { useContext, useState } from "react";
@@ -77,15 +78,31 @@ function AddProduct() {
         }
     });
 
+    const onBack = () => {
+        navigate(-1)
+    }
+
     return (
         <Box sx={{ maxWidth: 900, mx: "auto", mt: 2 }}>
             <Paper sx={{ p: 3 }}>
-                <Typography variant="h4" mb={3}>
-                    {id ? "Update Product" : "Add Product"}
-                </Typography>
+                <Grid container alignItems="center" mb={3} spacing={2}>
+                    <Grid item xs={12} md={6}>
+                        <Stack direction="row" alignItems="center" spacing={2}>
+                            <ArrowBackIcon
+                                sx={{ cursor: "pointer" }}
+                                onClick={onBack}
+                            />
+
+                            <Typography variant="h4" mb={3} >
+                                {id ? "Update Product" : "Add Product"}
+                            </Typography>
+                        </Stack>
+                    </Grid>
+                </Grid>
+
 
                 <form onSubmit={onSubmit}>
-                    <Grid container spacing={2}>
+                    <Grid container mt={2} spacing={2}>
 
                         {/* LEFT SIDE – IMAGE */}
                         <Grid size={{ xs: 12, sm: 6 }}>
