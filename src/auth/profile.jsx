@@ -42,7 +42,7 @@ function Profile() {
     const onSubmit = handleSubmit(async (data) => {
         // console.log('data to be submitted :', data);
         await updateUser(data);
-        navigate('/dashboard/profile')
+        navigate('/dashboard/profilecard')
 
     })
 
@@ -62,12 +62,12 @@ function Profile() {
             <Paper sx={{ p: 4 }}>
                 <Grid container alignItems="center" m={2} spacing={2}>
                     <Grid item xs={12} md={6}>
-                        <Stack direction="row" alignItems="center" spacing={1}>
+                        <Stack direction="row" alignItems="center" spacing={3}>
                             <ArrowBackIcon
                                 sx={{ cursor: "pointer" }}
                                 onClick={onBack}
                             />
-                            <Typography variant="h4" mb={3}>
+                            <Typography variant="h5" mb={3}>
                                 Update  Profile
                             </Typography>
 

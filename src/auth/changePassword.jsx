@@ -2,9 +2,12 @@ import React, { useContext } from "react";
 import {
     Box,
     Button,
+    Grid,
     Paper,
+    Stack,
     Typography
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../auth/context/auth-context";
 import { useForm } from "react-hook-form";
@@ -58,6 +61,9 @@ function ChangePassword() {
         }
     });
 
+    const onBack = () => {
+        navigate(-1)
+    }
     return (
         <Box
             sx={{
@@ -68,9 +74,22 @@ function ChangePassword() {
             }}
         >
             <Paper sx={{ p: 4 }}>
-                <Typography variant="h5" mb={3}>
-                    Change Password
-                </Typography>
+
+                <Grid container alignItems="center" spacing={2} sx={{ mb: 4 }}>
+                    {/* Back + title */}
+                    <Grid item xs={12} md={6}>
+                        <Stack direction="row" alignItems="center" spacing={3}>
+                            <ArrowBackIcon
+                                sx={{ cursor: "pointer" }}
+                                onClick={onBack}
+                            />
+                            <Typography variant="h5" mb={3}>
+                                Change Password
+                            </Typography>
+
+                        </Stack>
+                    </Grid>
+                </Grid>
 
                 <form onSubmit={onSubmit}>
                     <Controler
