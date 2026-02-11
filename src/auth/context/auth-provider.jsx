@@ -7,6 +7,7 @@ import { ComparePassword, ConvertHashPassword } from '../authService'
 export default function AuthProvider({ children }) {
     const [authenticated, setAuthenticated] = useState(false)
     const [user, setUser] = useState(null)
+    const [preview, setPreview] = useState(null)
 
     const me = async () => {
         const userEmail = JSON.parse(sessionStorage.getItem('userEmail'));
@@ -26,7 +27,8 @@ export default function AuthProvider({ children }) {
             firstname: userData.firstname,
             lastname: userData.lastname,
             email: userData.email,
-            phoneNumber: userData.phoneNumber
+            phoneNumber: userData.phoneNumber,
+            imageUrl: userData.imageUrl
         };
 
         setUser(userProfile);
@@ -74,42 +76,6 @@ export default function AuthProvider({ children }) {
 
 
     // Login function
-    // this is login function which is written in user's api file previously 
-
-    // async function loginUser(data) {
-    //     // console.log(data);
-    //     try {
-    //         const searchQuery = query(collection(db, "users"), where("email", "==", data.email));
-    //         const response = await getDocs(searchQuery)
-    //         if (response.empty) {
-    //             console.error("user not found ")
-    //         }
-    //         const userDoc = response.docs[0];
-    //         // console.log(userDoc.data());
-    //         const userData = { ...userDoc.data() };
-    //         const comparedHash = await ComparePassword(data.password, userData.password)
-
-    //         if (comparedHash) {
-    //             sessionStorage.setItem("user", JSON.stringify(userData));
-    //             setAuthenticated(true);
-    //         }
-    //         const userProfile = {
-    //             id: userDoc.id,
-    //             firstname: userData.firstname,
-    //             lastname: userData.lastname,
-    //             email: userData.email,
-    //             phoneNumber: userData.phoneNumber,
-    //         };
-
-    //         sessionStorage.setItem("userEmail", JSON.stringify(userProfile.email));
-    //         setAuthenticated(true);
-    //         setUser(userProfile);
-    //         return userProfile;
-
-    //     } catch (e) {
-    //         console.error("error at login ", e)
-    //     }
-    // }
 
     async function loginUser(data) {
         try {
@@ -132,7 +98,7 @@ export default function AuthProvider({ children }) {
                 userData.password
             );
 
-            // ❗ stop login if password incorrect
+            //  stop login if password incorrect
             if (!comparedHash) {
                 throw new Error("Invalid password");
             }
@@ -157,13 +123,6 @@ export default function AuthProvider({ children }) {
         }
     }
 
-
-    // Logout 
-    // const logout = () => {
-    //     sessionStorage.removeItem('userEmail');
-    //     setAuthenticated(false)
-    // }
-
     const logout = () => {
         sessionStorage.removeItem("userEmail");
         sessionStorage.removeItem("user");
@@ -179,15 +138,20 @@ export default function AuthProvider({ children }) {
             if (!user.id) {
                 throw ("User not found")
             }
+            if (!data.imageUrl) {
+                delete data.imageUrl;
+            }
 
             const docRef = doc(db, "users", user.id)
             // console.log(user.id);
 
 
-            await updateDoc(docRef, {
-                firstname: data.firstname,
-                lastname: data.lastname
-            });
+            await updateDoc(docRef, data
+                // {
+                // firstname: data.firstname,
+                // lastname: data.lastname
+                // }
+            );
 
             const updatedUser = {
                 ...user,
@@ -213,75 +177,6 @@ export default function AuthProvider({ children }) {
     }
 
     // Change Password 
-
-    // async function changePassword(data) {
-    //     try {
-    //         if (!user?.id) {
-    //             throw new Error("User not found");
-    //         }
-    //         console.log("Form password:", data.currentPassword);
-    //         console.log("User object:", user);
-    //         console.log("User password:", user?.password);
-
-    //         //  covert text to hash
-    //         const formPassword = await ConvertHashPassword(data.password)
-
-    //         // verify old password
-    //         const isMatch = await ComparePassword(formPassword, user.password);
-
-    //         if (!isMatch) {
-    //             throw new Error("Provide correct old password !");
-    //         }
-
-    //         //  hash new password
-    //         const newHashedPassword = await ConvertHashPassword(data.newPassword);
-
-    //         //  update in Firestore
-    //         const docRef = doc(db, "users", user.id);
-
-    //         await updateDoc(docRef, { password: newHashedPassword });
-
-    //         return {
-    //             success: true,
-    //             message: "Password updated successfully"
-    //         };
-    //     } catch (error) {
-    //         console.error("Change password error:", error);
-    //         throw error;
-    //     }
-    // }
-
-    // async function changePassword(data) {
-    //     try {
-    //         const docRef = doc(db, "users", user.id);
-    //         const docSnap = await getDoc(docRef);
-
-    //         const dbUser = docSnap.data();
-
-    //         const isMatch = await ComparePassword(
-    //             data.currentPassword,
-    //             dbUser.password
-    //         );
-
-    //         if (!isMatch) {
-    //             throw new Error("Current password is incorrect");
-    //         }
-
-    //         const newHashed = await ConvertHashPassword(data.newPassword);
-
-    //         await updateDoc(docRef, {
-    //             password: newHashed
-    //         });
-
-    //         return {
-    //             success: true,
-    //             message: "Password updated successfully"
-    //         };
-    //     } catch (error) {
-    //         console.error("Change password error:", error);
-    //         throw error;
-    //     }
-    // }
 
     async function changePassword(data) {
         try {
@@ -331,7 +226,7 @@ export default function AuthProvider({ children }) {
 
 
     return (
-        <AuthContext.Provider value={{ authenticated, user, loginUser, addUser, updateUser, logout, changePassword }}>
+        <AuthContext.Provider value={{ authenticated, user, loginUser, addUser, updateUser, logout, changePassword, preview, setPreview }}>
             {children}
         </AuthContext.Provider>
     )

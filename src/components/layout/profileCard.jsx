@@ -10,7 +10,7 @@ import {
     Chip,
     Divider
 } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import LogoutIcon from "@mui/icons-material/Logout";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -81,9 +81,6 @@ export default function ProfileCardPro() {
                                     sx={{ cursor: "pointer" }}
                                     onClick={onBack}
                                 />
-                                {/* <Typography variant="h5" fontWeight={700}>
-                                    Profile
-                                </Typography> */}
                             </Stack>
                         </Grid>
 
@@ -100,7 +97,7 @@ export default function ProfileCardPro() {
                         }}
                     >
                         <Avatar
-                            src={avatarSrc || undefined}
+                            src={user?.imageUrl || avatarSrc || undefined}
                             sx={{
                                 width: { xs: 120, md: 150 },
                                 height: { xs: 120, md: 150 },
@@ -123,7 +120,7 @@ export default function ProfileCardPro() {
                         >
                             <Button
                                 variant="contained"
-                                startIcon={<EditIcon />}
+                                startIcon={<EditOutlinedIcon />}
                                 onClick={onEdit}
                                 sx={{
                                     bgcolor: "#fff",

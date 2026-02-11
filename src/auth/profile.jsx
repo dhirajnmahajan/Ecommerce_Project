@@ -8,23 +8,26 @@ import { Controler } from "../components";
 import { Avatar, Box, Button, Grid, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import ImageController from '../components/controller/imageControler';
 
 function Profile() {
-    const { user, updateUser } = useContext(AuthContext)
+    const { user, updateUser, preview } = useContext(AuthContext)
     const navigate = useNavigate()
 
     const profileSchema = Yup.object().shape({
         firstname: Yup.string().required('First name is required'),
         lastname: Yup.string().required('Last name is required'),
         email: Yup.string().email('incorrect email format').required('Email is required'),
-        phoneNumber: Yup.string().required('Phone number is required')
+        phoneNumber: Yup.string().required('Phone number is required'),
+        imageUrl: Yup.mixed().nullable()
     });
 
     const defaultValues = useMemo(() => ({
         firstname: user?.firstname || '',
         lastname: user?.lastname || '',
         email: user?.email || '',
-        phoneNumber: user?.phoneNumber || ''
+        phoneNumber: user?.phoneNumber || '',
+        imageUrl: null
     }), [user]);
 
     const methods = useForm({
@@ -83,17 +86,17 @@ function Profile() {
                         {/* left side art  grid item  */}
                         <Grid item size={{ xs: 12, sm: 6 }}>
                             <Stack alignItems="center" spacing={2}>
-                                <Avatar sx={{ height: 140, width: 140 }} />
+                                <Avatar
+                                    src={preview || user?.imageUrl}
+                                    sx={{ height: 140, width: 140 }} />
                                 <Typography variant='caption'>
                                     JPG, PNG , GIF allowed
                                 </Typography>
 
                                 <Button variant="outlined" component="label">
                                     Upload Picture
-                                    <input type="file"
-                                        hidden
-                                        accept="image/*"
-                                    />
+                                    <ImageController name={'imageUrl'} control={control} type={"file"} accept={"image/*"} />
+
                                 </Button>
                             </Stack>
                         </Grid>
