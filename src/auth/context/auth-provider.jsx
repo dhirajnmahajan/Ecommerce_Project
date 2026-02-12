@@ -9,18 +9,21 @@ export default function AuthProvider({ children }) {
     const [user, setUser] = useState(null)
     const [preview, setPreview] = useState(null)
 
+    // me function 
     const me = async () => {
-        const userEmail = JSON.parse(sessionStorage.getItem('userEmail'));
-        const q = query(collection(db, "users"), where("email", "==", userEmail));
 
+        const userEmail = JSON.parse(sessionStorage.getItem('userEmail'));
+        if (!userEmail) {
+            return null;
+        }
+
+        const q = query(collection(db, "users"), where("email", "==", userEmail));
         const response = await getDocs(q)
         if (response.empty) {
             throw ("user Not Found");
-
         }
         const userDoc = response.docs[0];
         const userData = { ...userDoc.data() };
-
 
         const userProfile = {
             id: userDoc.id,
@@ -28,24 +31,38 @@ export default function AuthProvider({ children }) {
             lastname: userData.lastname,
             email: userData.email,
             phoneNumber: userData.phoneNumber,
-            imageUrl: userData.imageUrl
+            imageUrl: userData.imageUrl,
+            roleValue: userData.roleValue
         };
 
         setUser(userProfile);
         return userProfile;
     }
 
+    // initialize which calls me()
     const initialize = async () => {
-        await me();
-        setAuthenticated(true)
+
+        try {
+            const userProfile = await me();
+            if (userProfile) {
+                setAuthenticated(true)
+            } else {
+                setAuthenticated(false)
+            }
+        } catch (error) {
+            console.log("error", error)
+        }
+
     };
 
+    // useEffect which is calling initialize 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         initialize();
     }, [])
 
-    // register function 
+
+    // Register function 
     // this is register function which is written in user's api file previously
 
     async function addUser(formData) {
@@ -54,7 +71,8 @@ export default function AuthProvider({ children }) {
             const hashPassword = await ConvertHashPassword(formData.password)
             const payload = {
                 ...formData,
-                password: hashPassword
+                password: hashPassword,
+                roleValue: "customer"
             }
 
             const response = await addDoc(collection(db, "users"), payload);
@@ -109,6 +127,7 @@ export default function AuthProvider({ children }) {
                 lastname: userData.lastname,
                 email: userData.email,
                 phoneNumber: userData.phoneNumber,
+                roleValue: userData.roleValue
             };
 
             sessionStorage.setItem("userEmail", JSON.stringify(userProfile.email));

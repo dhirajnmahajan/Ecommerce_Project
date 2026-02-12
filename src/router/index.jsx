@@ -9,6 +9,7 @@ import ProductList from '../components/products/productList'
 import AddProduct from '../pages/products/addProduct'
 import ProfileCard from '../components/layout/profileCard'
 import ChangePassword from '../auth/changePassword'
+import NotFound from '../404'
 // import ProfileMenu from '../components/layout/profileMenu'
 
 
@@ -19,12 +20,13 @@ function Router() {
                 <Routes>
                     <Route path="/auth/login" element={<Login />} />
                     <Route path="/auth/register" element={<Register />} />
+                    <Route path='/404' element={<NotFound />} />
 
                     {/* Protected Route */}
                     <Route
                         path='/dashboard'
                         element={
-                            <AuthGuard>
+                            <AuthGuard roles={['admin', 'customer']}>
                                 <DashboardLayout />
                             </AuthGuard>
                         }
@@ -35,12 +37,27 @@ function Router() {
                         <Route path='profilecard/password' element={<ChangePassword />} />
                         {/* <Route path='profile/card/edit' element={<ProfileMenu />} /> */}
                         <Route path='products' element={<ProductList />} />
-                        <Route path='products/add' element={<AddProduct />} />
-                        <Route path="products/edit/:id" element={<AddProduct />} />
+
+                        {/* only admin */}
+                        <Route
+                            path='products/add'
+                            element={
+                                <AuthGuard roles={['admin']}>
+                                    <AddProduct />
+                                </AuthGuard>
+                            }
+                        />
+                        <Route
+                            path="products/edit/:id"
+                            element={
+                                <AuthGuard roles={['admin']}>
+                                    <AddProduct />
+                                </AuthGuard>
+                            } />
 
                     </Route>
                 </Routes>
-            </BrowserRouter>
+            </BrowserRouter >
         </>
     )
 }

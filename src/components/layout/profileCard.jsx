@@ -103,7 +103,7 @@ export default function ProfileCardPro() {
                                 height: { xs: 120, md: 150 },
                                 fontSize: 56,
                                 bgcolor: avatarSrc ? undefined : "primary.light",
-                                boxShadow: 6,
+                                boxShadow: 7,
                                 border: "4px solid white"
                             }}
                         >

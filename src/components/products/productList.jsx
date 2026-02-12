@@ -47,6 +47,7 @@ function ProductList() {
 
             <Box
                 sx={{
+                    width: '100%',
                     display: "flex",
                     justifyContent: "flex-end",
                     mb: 3
@@ -60,14 +61,16 @@ function ProductList() {
             <Box
                 sx={{
                     display: "flex",
-                    justifyContent: "flex-end",
-                    mb: 3
+                    // justifyContent: "flex-end",
+                    mb: 3,
+                    width: '100%',
                 }}
             >
                 <Grid
                     container
                     spacing={3}
                     justifyContent={{ xs: "center", md: "flex-start" }}
+                    sx={{ width: '100%' }}
                 >
                     {product?.map((item) => (
                         <Grid

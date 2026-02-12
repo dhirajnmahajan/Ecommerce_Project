@@ -7,7 +7,8 @@ import {
     Typography,
     Divider,
     Chip,
-    ListItemIcon
+    ListItemIcon,
+    Tooltip
 } from "@mui/material";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
@@ -45,26 +46,31 @@ function ProfileMenu() {
 
     return (
         <>
-            <Avatar
-                src={user?.imageUrl}
-                sx={{ cursor: "pointer" }}
-                onClick={handleOpen}
-            >
-                {user?.firstname?.[0] || "U"}
-            </Avatar>
+            <Tooltip title='profile' placement="left-start" arrow>
+
+                <Avatar
+                    src={user?.imageUrl}
+                    sx={{ cursor: "pointer", border: "2px solid white" }}
+                    onClick={handleOpen}
+                >
+                    {user?.firstname?.[0] || "U"}
+                </Avatar>
+            </Tooltip>
 
             <Menu
                 anchorEl={anchorEl}
                 open={open}
                 onClose={handleClose}
                 PaperProps={{
-                    sx: { width: 220, p: 1.5 }
+                    sx: { width: 220, p: 1.5, }
                 }}
             >
                 {/* User Info */}
                 <Box sx={{ display: "flex", gap: 2, alignItems: "center", p: 1 }}>
                     <Avatar
-                        src={user?.imageUrl}>
+                        src={user?.imageUrl}
+                        sx={{ border: "3px solid lightgray" }}
+                    >
                         {user?.firstname?.[0] || "U"}
                     </Avatar>
                     <Box>
